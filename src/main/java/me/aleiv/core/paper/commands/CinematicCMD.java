@@ -60,6 +60,19 @@ public class CinematicCMD extends BaseCommand {
         task.execute();
     }
 
+
+    @Subcommand("perfect")
+    public void perfect(CommandSender sender, String name){
+        var game = instance.getGame();
+        var cinematics = game.getCinematics();
+
+        if(cinematics.containsKey(name)){
+            //var cinematic = cinematics.get(name);
+            
+            
+        }
+    }
+
     @Subcommand("stop")
     public void stopRec(Player sender){
 
@@ -216,7 +229,7 @@ public class CinematicCMD extends BaseCommand {
 
     @Subcommand("play")
     @CommandCompletion("@players")
-    public void play(CommandSender sender, @Flags("other") Player player, String cinematic){
+    public void playCinematic(CommandSender sender, @Flags("other") Player player, String cinematic){
 
         var game = instance.getGame();
         var cinematics = game.getCinematics();
@@ -226,9 +239,17 @@ public class CinematicCMD extends BaseCommand {
 
         }else{
             var cine = cinematics.get(cinematic);
-            var frames = cine.getFrames();
+            var frames = cine.getProlongedFrames();
+            play(player, frames).execute();
 
-            var task = new BukkitTCT();
+            
+        
+        }
+
+    }
+
+    public BukkitTCT play(Player player, List<Frame> frames){
+        var task = new BukkitTCT();
 
             frames.forEach(frame ->{
 
@@ -242,10 +263,9 @@ public class CinematicCMD extends BaseCommand {
     
                 }, 50);
             });
-    
-            task.execute();
-        
-        }
+            return task;
 
     }
+
+
 }

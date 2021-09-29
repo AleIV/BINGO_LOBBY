@@ -16,6 +16,7 @@ import lombok.Getter;
 import me.aleiv.core.paper.commands.CinematicCMD;
 import me.aleiv.core.paper.commands.GlobalCMD;
 import me.aleiv.core.paper.listeners.GlobalListener;
+import me.aleiv.core.paper.objects.Cinematic;
 import me.aleiv.core.paper.utilities.JsonConfig;
 import me.aleiv.core.paper.utilities.NegativeSpaces;
 import me.aleiv.core.paper.utilities.TCT.BukkitTCT;
@@ -57,6 +58,18 @@ public class Core extends JavaPlugin {
         try {
             var jsonConfig = new JsonConfig("cinematics.json");
             var list = jsonConfig.getJsonObject();
+            var iter = list.entrySet().iterator();
+            var map = game.getCinematics();
+
+            while(iter.hasNext()) {
+                var entry = iter.next();
+                var name = entry.getKey();
+                var value = entry.getValue();
+                var cinematic = gson.fromJson(value, Cinematic.class);
+                map.put(name, cinematic);
+
+            }
+            
 
         } catch (Exception e) {
             
