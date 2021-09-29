@@ -2,6 +2,10 @@ package me.aleiv.core.paper;
 
 import java.time.Duration;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -12,6 +16,7 @@ import lombok.Getter;
 import me.aleiv.core.paper.commands.CinematicCMD;
 import me.aleiv.core.paper.commands.GlobalCMD;
 import me.aleiv.core.paper.listeners.GlobalListener;
+import me.aleiv.core.paper.utilities.JsonConfig;
 import me.aleiv.core.paper.utilities.NegativeSpaces;
 import me.aleiv.core.paper.utilities.TCT.BukkitTCT;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -26,6 +31,7 @@ public class Core extends JavaPlugin {
     private @Getter Game game;
     private @Getter PaperCommandManager commandManager;
     private @Getter static MiniMessage miniMessage = MiniMessage.get();
+    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     @Override
     public void onEnable() {
@@ -38,22 +44,44 @@ public class Core extends JavaPlugin {
         game = new Game(this);
         game.runTaskTimerAsynchronously(this, 0L, 20L);
 
-        //LISTENERS
+        // LISTENERS
 
         Bukkit.getPluginManager().registerEvents(new GlobalListener(this), this);
 
+        // COMMANDS
 
-        //COMMANDS
-        
         commandManager = new PaperCommandManager(this);
         commandManager.registerCommand(new GlobalCMD(this));
         commandManager.registerCommand(new CinematicCMD(this));
 
+        try {
+            var jsonConfig = new JsonConfig("cinematics.json");
+            var list = jsonConfig.getJsonObject();
+
+        } catch (Exception e) {
+            
+            e.printStackTrace();
+        }
+        
 
     }
 
     @Override
     public void onDisable() {
+
+        var list = game.getCinematics();
+
+        try {
+            var jsonConfig = new JsonConfig("cinematics.json");
+            var json = gson.toJson(list);
+            var obj = gson.fromJson(json, JsonObject.class);
+            jsonConfig.setJsonObject(obj);
+            jsonConfig.save();
+
+        } catch (Exception e) {
+            
+            e.printStackTrace();
+        }
 
     }
 
