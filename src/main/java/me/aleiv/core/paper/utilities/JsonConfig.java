@@ -56,5 +56,10 @@ public class JsonConfig {
 
         jsonObject = object;
     }
+    
+    public String getRedisUri() {
+        var uri = jsonObject.get("redisUri");
+        return uri != null ? uri.getAsString() : null;
+    }
 
 }

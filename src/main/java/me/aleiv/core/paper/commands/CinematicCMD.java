@@ -242,8 +242,6 @@ public class CinematicCMD extends BaseCommand {
             var frames = cine.getProlongedFrames();
             play(player, frames).execute();
 
-            
-        
         }
 
     }

@@ -7,6 +7,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World.Environment;
+import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -17,6 +19,7 @@ import me.aleiv.core.paper.commands.CinematicCMD;
 import me.aleiv.core.paper.commands.GlobalCMD;
 import me.aleiv.core.paper.listeners.GlobalListener;
 import me.aleiv.core.paper.objects.Cinematic;
+import me.aleiv.core.paper.teams.bukkit.BTeamManager;
 import me.aleiv.core.paper.utilities.JsonConfig;
 import me.aleiv.core.paper.utilities.NegativeSpaces;
 import me.aleiv.core.paper.utilities.TCT.BukkitTCT;
@@ -33,6 +36,8 @@ public class Core extends JavaPlugin {
     private @Getter PaperCommandManager commandManager;
     private @Getter static MiniMessage miniMessage = MiniMessage.get();
     private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private JsonConfig redisJsonConfig;
+    private @Getter BTeamManager teamManager;
 
     @Override
     public void onEnable() {
@@ -41,6 +46,16 @@ public class Core extends JavaPlugin {
         RapidInvManager.register(this);
         NegativeSpaces.registerCodes();
         BukkitTCT.registerPlugin(this);
+
+        // Obtain the secret connection string
+        try {
+            this.redisJsonConfig = new JsonConfig("secret.json");
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        var redisUri = redisJsonConfig != null ? redisJsonConfig.getRedisUri() : null;
+        // Hook the team , ensure no nulls
+        teamManager = new BTeamManager(this, redisUri != null ? redisUri : "redis://147.182.135.68");
 
         game = new Game(this);
         game.runTaskTimerAsynchronously(this, 0L, 20L);
@@ -75,6 +90,13 @@ public class Core extends JavaPlugin {
             
             e.printStackTrace();
         }
+
+        Bukkit.getScheduler().runTaskLater(this, task -> {
+            WorldCreator worldCreator = new WorldCreator("lobby");
+            worldCreator.environment(Environment.THE_END);
+            worldCreator.createWorld();
+
+        }, 20);
         
 
     }
