@@ -19,6 +19,7 @@ import me.aleiv.core.paper.commands.CinematicCMD;
 import me.aleiv.core.paper.commands.GlobalCMD;
 import me.aleiv.core.paper.listeners.GlobalListener;
 import me.aleiv.core.paper.objects.Cinematic;
+import me.aleiv.core.paper.tablist.Tablist;
 import me.aleiv.core.paper.teams.bukkit.BTeamManager;
 import me.aleiv.core.paper.utilities.JsonConfig;
 import me.aleiv.core.paper.utilities.NegativeSpaces;
@@ -39,6 +40,7 @@ public class Core extends JavaPlugin {
     private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private JsonConfig redisJsonConfig;
     private @Getter BTeamManager teamManager;
+    private @Getter Tablist tablist;
 
     @Override
     public void onEnable() {
@@ -51,10 +53,10 @@ public class Core extends JavaPlugin {
         // Obtain the secret connection string
         try {
             this.redisJsonConfig = new JsonConfig("secret.json");
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         var redisUri = redisJsonConfig != null ? redisJsonConfig.getRedisUri() : null;
         // Hook the team , ensure no nulls
         teamManager = new BTeamManager(this, redisUri != null ? redisUri : "redis://147.182.135.68");
@@ -78,7 +80,7 @@ public class Core extends JavaPlugin {
             var iter = list.entrySet().iterator();
             var map = game.getCinematics();
 
-            while(iter.hasNext()) {
+            while (iter.hasNext()) {
                 var entry = iter.next();
                 var name = entry.getKey();
                 var value = entry.getValue();
@@ -86,10 +88,9 @@ public class Core extends JavaPlugin {
                 map.put(name, cinematic);
 
             }
-            
 
         } catch (Exception e) {
-            
+
             e.printStackTrace();
         }
 
@@ -99,7 +100,9 @@ public class Core extends JavaPlugin {
             worldCreator.createWorld();
 
         }, 20);
-        
+        // WIP Tablist
+        tablist = new Tablist(this);
+        tablist.onEnable();
 
     }
 
@@ -116,19 +119,22 @@ public class Core extends JavaPlugin {
             jsonConfig.save();
 
         } catch (Exception e) {
-            
+
             e.printStackTrace();
         }
+
+        tablist.onDisable();
 
     }
 
     public void adminMessage(String text) {
-        Bukkit.getOnlinePlayers().forEach(player ->{
-            if(player.hasPermission("admin.perm")) player.sendMessage(text);
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            if (player.hasPermission("admin.perm"))
+                player.sendMessage(text);
         });
     }
 
-    public Component componentToString(String str){
+    public Component componentToString(String str) {
         return miniMessage.parse(str);
     }
 
