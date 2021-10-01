@@ -156,7 +156,7 @@ public class CinematicCMD extends BaseCommand {
 
                 task.addWithDelay(new BukkitRunnable() {
                     @Override
-                    public void run() {
+                    public void run(){
                         if(c == 0){
                             sender.sendMessage(ChatColor.DARK_RED + "REC.");
                             sender.playSound(sender.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
@@ -246,11 +246,12 @@ public class CinematicCMD extends BaseCommand {
 
         }, 50*110);
 
+        var players = Bukkit.getOnlinePlayers().stream().map(p -> (Player) p).toList();
+        players.forEach(p -> p.setGameMode(GameMode.SPECTATOR));
+
         for (var str : cinematic) {
             var cine = cinematics.get(str);
             var frames = cine.getProlongedFrames();
-            var players = Bukkit.getOnlinePlayers().stream().map(p -> (Player) p).toList();
-            players.forEach(p -> p.setGameMode(GameMode.SPECTATOR));
 
             var c = 0;
             for (var frame : frames) {
@@ -261,7 +262,6 @@ public class CinematicCMD extends BaseCommand {
                     @Override
                     public void run() {
                         players.forEach(p ->{
-                            
                             p.teleport(loc);
                         });
                     }
@@ -274,6 +274,7 @@ public class CinematicCMD extends BaseCommand {
         }
 
         var task2 = new BukkitTCT();
+
         for (var integer : list) {
             task2.addWithDelay(new BukkitRunnable() {
                 @Override
@@ -287,37 +288,19 @@ public class CinematicCMD extends BaseCommand {
         var last = instance.getGame().getCinematics().get("41");
         var frames = last.getFrames();
         var frame = frames.get(frames.size()-1);
-        var players = Bukkit.getOnlinePlayers().stream().map(p -> (Player) p).toList();
         var loc = new Location(Bukkit.getWorld(frame.getWorld()), frame.getX(), frame.getY(), frame.getZ(), frame.getYaw(), frame.getPitch());
 
-        for (int i = 0; i < 1200; i++) {
+        for (int i = 0; i < 800; i++) {
             task.addWithDelay(new BukkitRunnable() {
                 @Override
                 public void run() {
                     players.forEach(p ->{
-                        
                         p.teleport(loc);
                     });
                 }
 
             }, 50);
-
-            if(i == 1199){
-                sendBlack();
-            }
         }
-
-        task.addWithDelay(new BukkitRunnable() {
-            @Override
-            public void run() {
-                players.forEach(p ->{
-                    var lobby = Bukkit.getWorld("lobby");
-                    var loc2 = new Location(lobby, 0.5, 126, 0.5, 90, -0);
-                    p.teleport(loc2);
-                });
-            }
-
-        }, 50*110);
 
         task.execute();
         task2.execute();
