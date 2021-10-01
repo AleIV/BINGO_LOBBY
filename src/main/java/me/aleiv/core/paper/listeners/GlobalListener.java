@@ -2,6 +2,7 @@ package me.aleiv.core.paper.listeners;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -25,16 +26,18 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
+import lombok.Getter;
 import me.aleiv.core.paper.Core;
 import me.aleiv.core.paper.events.GameTickEvent;
 import me.aleiv.core.paper.objects.Frame;
+import net.md_5.bungee.api.ChatColor;
 
 public class GlobalListener implements Listener{
     
     Core instance;
 
     String black = Character.toString('\u3400');
-
+    private @Getter static String star = Character.toString('\uEAA6');
     List<String> list = new ArrayList<>();
 
     public GlobalListener(Core instance){
@@ -44,7 +47,11 @@ public class GlobalListener implements Listener{
     @EventHandler
     public void onGameTick(GameTickEvent e) {
         Bukkit.getScheduler().runTask(instance, () -> {
-           
+            if(e.getSecond() % 5 == 0){
+                Bukkit.getOnlinePlayers().forEach(player ->{
+                    instance.sendHeader(player, getPlayerHeader(player));
+                });
+            }
         });
     }
 
@@ -189,6 +196,7 @@ public class GlobalListener implements Listener{
         var loc = new Location(lobby, 0.5, 126, 0.5, 90, -0);
 
         player.teleport(loc);
+        instance.sendHeader(player, getPlayerHeader(player));
     }
 
     @EventHandler
@@ -200,6 +208,29 @@ public class GlobalListener implements Listener{
             }
 
         }
+    }
+
+    public String getPlayerHeader(Player player){
+        var manager = instance.getTeamManager();
+        var header = new StringBuilder();
+        var team = manager.getPlayerTeam(player.getUniqueId());
+
+        if(team != null){
+            var points = team.getPoints() == null || team.getPoints() < 1 ? 0 : team.getPoints();
+            header.append("\n");
+            header.append(ChatColor.AQUA + "" + team.getTeamName() + " ");
+            var uuids = team.getMembers();
+            for (UUID uuid : uuids){
+                var p = Bukkit.getPlayer(uuid);
+                if(p != null){
+                    header.append(ChatColor.YELLOW + p.getName() + " ");
+                }
+            }
+            header.append(ChatColor.WHITE + "" + points + ChatColor.RESET + star + " ");
+        }
+        
+
+        return header.toString();
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

@@ -284,13 +284,40 @@ public class CinematicCMD extends BaseCommand {
             }, ((50*integer) + 50*110)-(50*110));
         }
 
+        var last = instance.getGame().getCinematics().get("41");
+        var frames = last.getFrames();
+        var frame = frames.get(frames.size()-1);
+        var players = Bukkit.getOnlinePlayers().stream().map(p -> (Player) p).toList();
+        var loc = new Location(Bukkit.getWorld(frame.getWorld()), frame.getX(), frame.getY(), frame.getZ(), frame.getYaw(), frame.getPitch());
+
+        for (int i = 0; i < 1200; i++) {
+            task.addWithDelay(new BukkitRunnable() {
+                @Override
+                public void run() {
+                    players.forEach(p ->{
+                        
+                        p.teleport(loc);
+                    });
+                }
+
+            }, 50);
+
+            if(i == 1199){
+                sendBlack();
+            }
+        }
+
         task.addWithDelay(new BukkitRunnable() {
             @Override
             public void run() {
-                hide(false);
+                players.forEach(p ->{
+                    var lobby = Bukkit.getWorld("lobby");
+                    var loc2 = new Location(lobby, 0.5, 126, 0.5, 90, -0);
+                    p.teleport(loc2);
+                });
             }
 
-        }, 50);
+        }, 50*110);
 
         task.execute();
         task2.execute();
@@ -338,13 +365,6 @@ public class CinematicCMD extends BaseCommand {
                 }, 50);
             });
 
-            task.addWithDelay(new BukkitRunnable() {
-                @Override
-                public void run() {
-                    hide(false);
-                }
-
-            }, 50);
             return task;
 
     }

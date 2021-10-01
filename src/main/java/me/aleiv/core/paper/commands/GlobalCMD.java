@@ -153,7 +153,7 @@ public class GlobalCMD extends BaseCommand {
     }
 
     @Subcommand("create-global-ffa-teams")
-    public void createAllTeams(CommandSender sender) {
+    public void createAllTeams(CommandSender sender){
         var manager = instance.getTeamManager();
         var map = manager.getTeamsMap();
 
@@ -214,14 +214,11 @@ public class GlobalCMD extends BaseCommand {
     
             });
         }
-            
-
-        
 
     }
 
     @Subcommand("play-animation")
-    public void playAnimation(CommandSender sender, Integer from, Integer until, String... text) {
+    public void playAnimation(CommandSender sender, Integer from, Integer until, String sound, String... text) {
         var task = new BukkitTCT();
         var animation = Frames.getFramesCharsIntegersAll(from, until);
 
@@ -229,6 +226,11 @@ public class GlobalCMD extends BaseCommand {
         for (var charac : text) {
             newText.append(charac);
         }
+
+        Bukkit.getOnlinePlayers().forEach(player ->{
+            var loc = player.getLocation();
+            player.playSound(loc, sound, 1, 1);
+        });
 
         animation.forEach(frame -> {
             task.addWithDelay(new BukkitRunnable() {
@@ -252,6 +254,30 @@ public class GlobalCMD extends BaseCommand {
         var game = instance.getGame();
         game.setGlobalmute(!game.getGlobalmute());
         instance.adminMessage("GLOBALMUTE " + game.getGlobalmute());
+
+    }
+
+    @Subcommand("hide")
+    public void hide(CommandSender sender, Boolean bool) {
+        hide(bool);
+
+    }
+
+    public void hide(boolean bool){
+
+        if(bool){
+            Bukkit.getOnlinePlayers().forEach(p1 ->{
+                Bukkit.getOnlinePlayers().forEach(p2 ->{
+                    p1.hidePlayer(instance, p2);
+                });
+            });
+        }else{
+            Bukkit.getOnlinePlayers().forEach(p1 ->{
+                Bukkit.getOnlinePlayers().forEach(p2 ->{
+                    p1.showPlayer(instance, p2);
+                });
+            });
+        }
 
     }
 }
