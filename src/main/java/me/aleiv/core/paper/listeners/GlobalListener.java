@@ -1,5 +1,8 @@
 package me.aleiv.core.paper.listeners;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
@@ -28,6 +31,10 @@ public class GlobalListener implements Listener{
     
     Core instance;
 
+    String black = Character.toString('\u3400');
+
+    List<String> list = new ArrayList<>();
+
     public GlobalListener(Core instance){
         this.instance = instance;
     }
@@ -35,7 +42,7 @@ public class GlobalListener implements Listener{
     @EventHandler
     public void onGameTick(GameTickEvent e) {
         Bukkit.getScheduler().runTask(instance, () -> {
-            
+           
         });
     }
 
@@ -46,6 +53,25 @@ public class GlobalListener implements Listener{
         var uuid = e.getPlayer().getUniqueId();
         if(recording.containsKey(uuid)){
             recording.remove(uuid);
+        }
+    }
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent e){
+        var to = e.getTo();
+        if(to.getY() > 110) return;
+
+        var player = e.getPlayer();
+        if(to.getWorld().getName().toString().contains("lobby") && !list.contains(player.getName())){   
+            list.add(player.getName());
+            var lobby = Bukkit.getWorld("lobby");
+            var loc = new Location(lobby, 0.5, 126, 0.5, 90, -0);
+
+            instance.showTitle(player, black, "", 10, 10, 10);
+            Bukkit.getScheduler().runTaskLater(instance, task ->{
+                player.teleport(loc);
+                list.remove(player.getName());
+            }, 15);
         }
     }
 
@@ -61,7 +87,7 @@ public class GlobalListener implements Listener{
         }
     }
 
-    @EventHandler
+    //@EventHandler
     public void playerMove(PlayerMoveEvent e){
         var game = instance.getGame();
         var recording = game.getRecording();
@@ -173,6 +199,8 @@ public class GlobalListener implements Listener{
 
         }
     }
+
+
 
 
 }

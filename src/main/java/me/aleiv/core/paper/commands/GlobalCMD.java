@@ -10,6 +10,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
@@ -20,6 +21,8 @@ import co.aikar.commands.annotation.Subcommand;
 import lombok.NonNull;
 import me.aleiv.core.paper.Core;
 import me.aleiv.core.paper.teams.exceptions.TeamAlreadyExistsException;
+import me.aleiv.core.paper.utilities.Frames;
+import me.aleiv.core.paper.utilities.TCT.BukkitTCT;
 import net.md_5.bungee.api.ChatColor;
 
 @CommandAlias("global")
@@ -217,5 +220,30 @@ public class GlobalCMD extends BaseCommand {
 
     }
 
-    
+    @Subcommand("play-animation")
+    public void playAnimation(CommandSender sender, Integer from, Integer until, String... text) {
+        var task = new BukkitTCT();
+        var animation = Frames.getFramesCharsIntegersAll(from, until);
+
+        var newText = new StringBuilder();
+        for (var charac : text) {
+            newText.append(charac);
+        }
+
+        animation.forEach(frame -> {
+            task.addWithDelay(new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Bukkit.getOnlinePlayers().forEach(player ->{
+                        instance.showTitle(player, frame + "", ChatColor.GOLD + newText.toString(), 0, 20, 0);
+                    });
+
+                }
+
+            }, 50);
+        });
+
+        task.execute();
+
+    }
 }

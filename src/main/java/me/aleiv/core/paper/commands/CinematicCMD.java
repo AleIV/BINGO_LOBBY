@@ -1,8 +1,10 @@
 package me.aleiv.core.paper.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
@@ -11,9 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Subcommand;
 import lombok.NonNull;
 import me.aleiv.core.paper.Core;
@@ -22,7 +22,7 @@ import me.aleiv.core.paper.objects.Frame;
 import me.aleiv.core.paper.utilities.TCT.BukkitTCT;
 import net.md_5.bungee.api.ChatColor;
 
-@CommandAlias("cinematic")
+@CommandAlias("cinematic|c")
 @CommandPermission("cinematic.cmd")
 public class CinematicCMD extends BaseCommand {
 
@@ -227,9 +227,78 @@ public class CinematicCMD extends BaseCommand {
         }
     }
 
+    @Subcommand("play-all")
+    public void playALL(CommandSender sender, String... cinematic){
+
+        var game = instance.getGame();
+        var cinematics = game.getCinematics();
+        var task = new BukkitTCT();
+        hide(true);
+
+        List<Integer> list = new ArrayList<>();
+
+        sendBlack();
+        task.addWithDelay(new BukkitRunnable() {
+            @Override
+            public void run() {
+                
+            }
+
+        }, 50*110);
+
+        for (var str : cinematic) {
+            var cine = cinematics.get(str);
+            var frames = cine.getProlongedFrames();
+            var players = Bukkit.getOnlinePlayers().stream().map(p -> (Player) p).toList();
+            players.forEach(p -> p.setGameMode(GameMode.SPECTATOR));
+
+            var c = 0;
+            for (var frame : frames) {
+                var world = Bukkit.getWorld(frame.getWorld());
+                var loc = new Location(world, frame.getX(), frame.getY(), frame.getZ(), frame.getYaw(), frame.getPitch());
+
+                task.addWithDelay(new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        players.forEach(p ->{
+                            
+                            p.teleport(loc);
+                        });
+                    }
+    
+                }, 50);
+                c++;
+            }
+            list.add(c);
+            
+        }
+
+        var task2 = new BukkitTCT();
+        for (var integer : list) {
+            task2.addWithDelay(new BukkitRunnable() {
+                @Override
+                public void run() {
+                    sendBlack();
+                }
+
+            }, ((50*integer) + 50*110)-(50*110));
+        }
+
+        task.addWithDelay(new BukkitRunnable() {
+            @Override
+            public void run() {
+                hide(false);
+            }
+
+        }, 50);
+
+        task.execute();
+        task2.execute();
+
+    }
+
     @Subcommand("play")
-    @CommandCompletion("@players")
-    public void playCinematic(CommandSender sender, @Flags("other") Player player, String cinematic){
+    public void playCinematic(CommandSender sender, String cinematic){
 
         var game = instance.getGame();
         var cinematics = game.getCinematics();
@@ -240,28 +309,68 @@ public class CinematicCMD extends BaseCommand {
         }else{
             var cine = cinematics.get(cinematic);
             var frames = cine.getProlongedFrames();
-            play(player, frames).execute();
+            var players = Bukkit.getOnlinePlayers().stream().map(p -> (Player) p).toList();
+            players.forEach(p -> p.setGameMode(GameMode.SPECTATOR));
+            play(players, frames).execute();
 
+            
         }
 
     }
 
-    public BukkitTCT play(Player player, List<Frame> frames){
+    public BukkitTCT play(List<Player> players, List<Frame> frames){
         var task = new BukkitTCT();
 
+            hide(true);
             frames.forEach(frame ->{
+                var world = Bukkit.getWorld(frame.getWorld());
+                var loc = new Location(world, frame.getX(), frame.getY(), frame.getZ(), frame.getYaw(), frame.getPitch());
 
                 task.addWithDelay(new BukkitRunnable() {
                     @Override
                     public void run() {
-                        var world = Bukkit.getWorld(frame.getWorld());
-                        var loc = new Location(world, frame.getX(), frame.getY(), frame.getZ(), frame.getYaw(), frame.getPitch());
-                        player.teleport(loc);
+                        players.forEach(p ->{
+                            
+                            p.teleport(loc);
+                        });
                     }
     
                 }, 50);
             });
+
+            task.addWithDelay(new BukkitRunnable() {
+                @Override
+                public void run() {
+                    hide(false);
+                }
+
+            }, 50);
             return task;
+
+    }
+
+    public void sendBlack(){
+        String black = Character.toString('\u3400');
+        Bukkit.getOnlinePlayers().forEach(p ->{
+            instance.showTitle(p, black, "", 100, 20, 100);
+        });
+    }
+
+    public void hide(boolean bool){
+
+        if(bool){
+            Bukkit.getOnlinePlayers().forEach(p1 ->{
+                Bukkit.getOnlinePlayers().forEach(p2 ->{
+                    p1.hidePlayer(instance, p2);
+                });
+            });
+        }else{
+            Bukkit.getOnlinePlayers().forEach(p1 ->{
+                Bukkit.getOnlinePlayers().forEach(p2 ->{
+                    p1.showPlayer(instance, p2);
+                });
+            });
+        }
 
     }
 

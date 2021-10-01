@@ -53,6 +53,7 @@ public class Core extends JavaPlugin {
         } catch (Exception e){
             e.printStackTrace();
         }
+        
         var redisUri = redisJsonConfig != null ? redisJsonConfig.getRedisUri() : null;
         // Hook the team , ensure no nulls
         teamManager = new BTeamManager(this, redisUri != null ? redisUri : "redis://147.182.135.68");
