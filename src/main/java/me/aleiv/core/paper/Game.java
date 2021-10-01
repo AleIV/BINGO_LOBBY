@@ -19,6 +19,8 @@ public class Game extends BukkitRunnable {
     long gameTime = 0;
     long startTime = 0;
 
+    Boolean globalmute = false;
+
     HashMap<String, Cinematic> cinematics = new HashMap<>();
     HashMap<UUID, Cinematic> recording = new HashMap<>();
 

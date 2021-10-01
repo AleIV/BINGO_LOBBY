@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -23,6 +24,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import io.papermc.paper.event.player.AsyncChatEvent;
 import me.aleiv.core.paper.Core;
 import me.aleiv.core.paper.events.GameTickEvent;
 import me.aleiv.core.paper.objects.Frame;
@@ -197,6 +199,14 @@ public class GlobalListener implements Listener{
                 e.setCancelled(true);
             }
 
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void checkForMute(AsyncChatEvent e) {
+        var game = instance.getGame();
+        if (game.getGlobalmute() && !e.getPlayer().hasPermission("globalmute.talk")) {
+            e.setCancelled(true);
         }
     }
 

@@ -246,4 +246,12 @@ public class GlobalCMD extends BaseCommand {
         task.execute();
 
     }
+
+    @Subcommand("globalmute")
+    public void globalmute(CommandSender sender) {
+        var game = instance.getGame();
+        game.setGlobalmute(!game.getGlobalmute());
+        instance.adminMessage("GLOBALMUTE " + game.getGlobalmute());
+
+    }
 }
