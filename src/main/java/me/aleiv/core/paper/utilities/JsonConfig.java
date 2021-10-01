@@ -29,7 +29,7 @@ public class JsonConfig {
     }
 
     public JsonConfig(String filename) throws Exception {
-        this(filename, System.getProperty("user.dir") + File.separatorChar + "condor");
+        this(filename, System.getProperty("user.dir") + File.separatorChar + "secrets");
     }
 
     public void save() throws Exception {
