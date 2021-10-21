@@ -217,14 +217,14 @@ public class GlobalCMD extends BaseCommand {
 
     }
 
-    //@Subcommand("play-animation")
+    @Subcommand("play-animation")
     public void playAnimation(CommandSender sender, Integer from, Integer until, String sound, String... text) {
         var task = new BukkitTCT();
         var animation = Frames.getFramesCharsIntegersAll(from, until);
 
         var newText = new StringBuilder();
         for (var charac : text) {
-            newText.append(charac);
+            newText.append(charac + " ");
         }
 
         Bukkit.getOnlinePlayers().forEach(player ->{
