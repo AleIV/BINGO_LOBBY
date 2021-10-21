@@ -37,10 +37,10 @@ public class GlobalCMD extends BaseCommand {
 
     }
 
-    @CommandPermission("admin.perm")
-    @Subcommand("tpworld")
-    @CommandAlias("tpworld")
-    @CommandCompletion("@worlds")
+    //@CommandPermission("admin.perm")
+    //@Subcommand("tpworld")
+    //@CommandAlias("tpworld")
+    //@CommandCompletion("@worlds")
     public void tpWorld(Player player, World world) {
         player.teleport(world.getSpawnLocation());
         player.sendMessage(ChatColor.GRAY + "Teleported to world " + world.getName());
@@ -217,7 +217,7 @@ public class GlobalCMD extends BaseCommand {
 
     }
 
-    @Subcommand("play-animation")
+    //@Subcommand("play-animation")
     public void playAnimation(CommandSender sender, Integer from, Integer until, String sound, String... text) {
         var task = new BukkitTCT();
         var animation = Frames.getFramesCharsIntegersAll(from, until);
@@ -257,7 +257,7 @@ public class GlobalCMD extends BaseCommand {
 
     }
 
-    @Subcommand("hide")
+    //@Subcommand("hide")
     public void hide(CommandSender sender, Boolean bool) {
         hide(bool);
 

@@ -30,6 +30,7 @@ public class Cinematic {
      * @param two The second frame.
      * @return The delta of the two frames smoothed out.
      */
+    
     private Frame combineFrames(Frame one, Frame two) {
         return new Frame(one.getWorld(), (one.getX() + two.getX()) / 2, (one.getY() + two.getY()) / 2,
                 (one.getZ() + two.getZ()) / 2, (one.getYaw() + two.getYaw()) / 2,

@@ -66,6 +66,8 @@ public class GlobalListener implements Listener {
         if (recording.containsKey(uuid)) {
             recording.remove(uuid);
         }
+
+        e.quitMessage(instance.componentToString(""));
     }
 
     @EventHandler
@@ -209,6 +211,7 @@ public class GlobalListener implements Listener {
         var player = e.getPlayer();
         var lobby = Bukkit.getWorld("lobby");
         var loc = new Location(lobby, 0.5, 126, 0.5, 90, -0);
+        e.joinMessage(instance.componentToString(""));
 
         player.teleport(loc);
         instance.sendHeader(player, getPlayerHeader(player));

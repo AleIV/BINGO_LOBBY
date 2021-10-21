@@ -72,7 +72,7 @@ public class Core extends JavaPlugin {
 
         commandManager = new PaperCommandManager(this);
         commandManager.registerCommand(new GlobalCMD(this));
-        commandManager.registerCommand(new CinematicCMD(this));
+        //commandManager.registerCommand(new CinematicCMD(this));
 
         try {
             var jsonConfig = new JsonConfig("cinematics.json");
