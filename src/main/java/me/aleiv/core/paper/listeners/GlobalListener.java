@@ -215,6 +215,7 @@ public class GlobalListener implements Listener {
 
         player.teleport(loc);
         instance.sendHeader(player, getPlayerHeader(player));
+        DedsafioTablistGenerator.writeIfNotPresent(player);
     }
 
     @EventHandler
