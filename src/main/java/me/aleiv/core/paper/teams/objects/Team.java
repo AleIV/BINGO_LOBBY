@@ -82,4 +82,12 @@ public class Team extends BaseTeam {
                 + ", members=" + members + ", teamName=" + teamName + "]";
     }
 
+    public Team clone() {
+        Team clone = new Team(teamID, members, teamName);
+        clone.setPoints(0);
+        clone.setLastObtainedPoints(0L);
+        return clone;
+
+    }
+
 }
